@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>jquery轮播图</title>
+	<style type="text/css">
+		.lead
+		{
+			width: 600px;
+			text-align: center;
+			position: relative;
+		}
+		.div
+		{
+			width: 600px;
+			height: 320px;
+			background-color: black;
+			overflow: hidden;
+		}
+		img
+		{
+			width: 600px;
+			height: 320px;
+		}
+		span
+		{
+			width: 9px;
+			height: 9px;
+			background-color: #ccc;
+			border-radius: 50px;
+			display: inline-block;
+			margin: 0 5px;
+
+		}
+		button
+		{
+			width: 40px;
+			height: 80px;
+			background-color: black;
+			opacity: 0.5;
+			border-style: none;
+			color: white;
+			font-size: 30px;
+			display: none;
+		}
+		.up
+		{
+			position: absolute;
+			top: 120px;
+			left: 0;
+		}
+		.down
+		{
+			position: absolute;
+			top: 120px;
+			right:  0px;
+		}
+	</style>
+</head>
+<body>
+<div class="lead">
+	
+	<div class="div">
+		<img src="image/image (1).jpg" alt="">
+		<img src="image/image (2).jpg" alt="" hidden="">
+		<img src="image/image (4).jpg" alt="" hidden="">
+		<img src="image/image (5).jpg" alt="" hidden="">
+	</div>
+	<div>
+		<span style="background-color: red;"></span>
+		<span></span>
+		<span></span>
+		<span></span>
+	</div>
+	<button class="up"><</button>
+	<button class="down">></button>
+</div>
+	
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript">
+	$(function(){
+		var i = 0;
+		$('.lead').hover(function() {
+			$('button').fadeIn(400);
+		}, function() {
+			$('button').fadeOut(400);
+			
+		});
+		var time = setInterval(action,2000);
+	
+		function action()
+		{
+			i++;
+			if ( i == $('img').length ) {
+				i = 0 ;
+			}else if ( i < 0 ) {
+				i = $('img').length - 1;
+			};
+			$('span').eq(i).css('background-color', 'red').siblings().css('background-color', '#ccc');
+			$('img').eq(i).show(1000).siblings().hide(800);
+		}
+		
+		$('span').click(function() {
+			clearInterval(time);
+			$(this).css('background-color', 'red').siblings().css('background-color', '#ccc');
+			i = $(this).index();
+			$('img').eq(i).fadeIn(1000).siblings().fadeOut(500);
+			time = setInterval(action,2000);
+		});
+		
+		$('button').click(function(){
+			clearInterval(time);
+			var c = $(this).index('button');
+			if (c == 0) {
+				i--;
+			} else if(c == 1){
+				i++;
+			};
+
+			if ( i == $('img').length ) {
+				i = 0 ;
+			}else if ( i < 0 ) {
+				i = $('img').length - 1;
+			};
+			$('span').eq(i).css('background-color', 'red').siblings().css('background-color', '#ccc');
+			$('img').eq(i).fadeIn(1000).siblings().fadeOut(500);
+			time = setInterval(action,2000);
+		});
+	})
+</script>
+</body>
+</html>
