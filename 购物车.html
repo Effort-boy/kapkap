@@ -1,0 +1,224 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>购物车</title>
+    <meta charset="utf-8" />
+    <style type="text/css">
+      h1 {
+        text-align:center;
+      }
+      table {
+        margin:0 auto;
+        width:60%;
+        border:2px solid #aaa;
+        border-collapse:collapse;
+      }
+      table th, table td {
+        border:2px solid #aaa;
+        padding:5px;
+      }
+      th {
+        background-color:#eee;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>真划算</h1>
+    <table id="shopping">
+      <tr>
+        <th>商品</th>
+        <th>单价(元)</th>
+        <th>颜色</th>
+        <th>库存</th>
+        <th>好评率</th>
+        <th>操作</th>
+      </tr>   
+      <tr>
+        <td class="name">罗技M185鼠标</td>
+        <td class="price">80</td>
+        <td>黑色</td>
+        <td>893</td>
+        <td>98%</td>
+        <td align="center">
+          <input type="button" value="加入购物车" />
+        </td>
+      </tr>
+      <tr>
+        <td class="name">微软X470键盘</td>
+        <td class="price">150</td>
+        <td>黑色</td>
+        <td>9028</td>
+        <td>96%</td>
+        <td align="center">
+          <input type="button" value="加入购物车" />
+        </td>
+      </tr>
+      <tr>
+        <td class="name">洛克iphone6手机壳</td>
+        <td class="price">60</td>
+        <td>透明</td>
+        <td>672</td>
+        <td>99%</td>
+        <td align="center">
+          <input type="button" value="加入购物车" />
+        </td>
+      </tr>
+      <tr>
+        <td class="name">蓝牙耳机</td>
+        <td class="price">100</td>
+        <td>蓝色</td>
+        <td>8937</td>
+        <td>95%</td>
+        <td align="center">
+          <input type="button" value="加入购物车" />
+        </td>
+      </tr>
+      <tr>
+        <td class="name">金士顿U盘</td>
+        <td class="price">70</td>
+        <td>红色</td>
+        <td>482</td>
+        <td>100%</td>
+        <td align="center">
+          <input type="button" value="加入购物车" />
+        </td>
+      </tr>
+    </table>
+  
+    <h1>购物车</h1>
+    <table id="buyCar">
+      <thead>
+        <tr>
+          <th>商品</th>
+          <th>单价(元)</th>
+          <th>数量</th>
+          <th>金额(元)</th>
+          <th>删除</th>
+        </tr>
+      </thead>
+      <tbody id="goods"></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3" align="right">总计</td>
+          <td id="total">0</td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table> 
+    
+    <script src="js/jquery-3.4.1.js"></script>
+    <script type="text/javascript">
+    	$(function(){
+    		//获取商品名和价格
+    		$('#shopping input').click(function(){
+    			//购物车数量
+          var carNum = $('#goods tr').length;
+    			var carTure= true;//判断是否添加购物车
+    			var i = $(this).index('input');//获取点击添加的下标
+    			var name = $('.name').eq(i).text();//商品名
+    			var price = $('.price').eq(i).text();//商品价格
+          //判断购物车是否已经含有该产品
+    			$.each($('.bname'), function(i,val) {
+    				if( name == $(val).text())
+    				{
+    					carTure = false;
+    					numPrice("+",i);
+    				}
+    			});
+          //是否添加购物车
+    			if(carTure == true)
+    			{
+            //购物车商品结构
+    				var carShop = "<tr><td class='bname'>"+name+"</td><td class='bprice'>" + price + "</td><td align='center'><input type='button' class='count' value='-'/><input type='text' class='num' size='3' readonly value='1'/><input type='button' class='count' value='+'/></td><td class='numPrice'>"+price+"</td><td align='center'><input id='dele' type='button' value='x'/></td></tr>";
+    				$(carShop).appendTo('#goods');
+            //删除按钮
+            $("#goods tr:eq("+carNum+") #dele").click(function(){
+              $(this).parent().parent().remove();
+              sumFameWork();
+            })
+            //数量框函数
+            $("#goods tr:eq("+carNum+") .count").click(function(){
+                var type = $(this).val();
+                numPrice(type,carNum);      
+    				})
+    			}
+          //计算总价
+    			both();
+    		});
+      })
+    		/**
+    		 *重新给数量和价格赋值 
+    		 * @param {int} type //按钮类型
+    		 * @param {int} index //数量框所在下标
+    		 */
+    		function numPrice(type,index)
+    		{
+          //获取数量框的值
+    			var num = $('.num').eq(index).val();
+          //判断是加还是减
+    			if( type == "+")
+    			{
+    			   num++;
+    			   if(num >1)
+    			   {
+    					   $('.minus').eq(index).removeAttr('disabled');
+    			   }
+    			}else if( type == "-")
+    			{
+    				if (num <2) 
+    				{
+    					$(this).attr('disabled','disabled');
+	    			}else{
+	    				num--;
+	    			}	
+    			}
+          //重新给数量框赋值
+    			$('.num').eq(index).val(num);
+          //计算金额
+    			var sum = num * parseInt($('.bprice').eq(index).text());
+          //把金额重新赋值
+    			$('.numPrice').eq(index).text(sum);
+          both();
+    		}
+    		/**
+    		 * 计算总价格
+    		 */
+    		function both()
+    		{
+          //定义总价变量
+    			var sum = 0;
+    			$.each($('.numPrice'), function(i,val) {
+            //获取所有商品的进而
+    				var count =  $(val).text();
+            //计算总价
+    				sum += parseInt(count);
+    			});
+          //把总价重新赋值
+    			$('#total').text(sum);
+    		}	
+        /**
+         * 数量框函数
+         * @return {[type]} [description]
+         */
+        function sumFameWork()
+            {
+              //解除之前绑定事件
+              $('#goods tr .count,#goods tr #dele').unbind();
+              //重新绑定事件
+              $.each($('#goods tr'), function(index){
+                $("#goods tr:eq("+index+") .count").click(function(){
+                  var type = $(this).val();
+                  numPrice(type,index);
+                })
+                $("#goods tr:eq("+index+") #dele").click(function(){
+              		$(this).parent().parent().remove();
+              		sumFameWork();
+            		})
+              });
+              both();
+            }
+    </script>
+    
+    
+  </body>
+</html>
